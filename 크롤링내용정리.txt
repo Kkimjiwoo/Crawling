@@ -1,0 +1,75 @@
+크롤링 데이터 수집 자동화-기초
+https://blog.naver.com/ppos78/223412346336
+
+1. 가상환경
+#pip 설치 명령어
+pip install selenium==4.12.0 webdriver_manager==4.0.0
+#가상환경 활성화 명령어(윈도우)
+source .venv/Scripts/activat
+#가상환경 활성화 명령어(맥)
+source .venv/bin/activate
+
+2. 
+.venv 만들어지면 vscode 에서 터미널 열어서
+' + '  git bash 선택
+$ source .venv/Scripts/activate
+ pip install requests
+ $ pip install selenium==4.12.0 webdriver_manager==4.0.0
+
+3. 
+ 코드 스니펫- 셀레니움 뼈대 코드
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+
+chrome_options = Options()
+chrome_options.add_experimental_option("detach",True)
+chrome_options.add_experimental_option("excludeSwitches",["enable-logging"])
+driver = webdriver.Chrome(options=chrome_options)
+
+4. 
+path = "https://www.google.com/search?q=weather" # 경로 지정
+driver.get(path)
+
+OR
+
+driver.get(f"https://www.google.com/search?q=weather")
+
+OR
+
+keyword="input('키워드를 입력하세요. ')"
+driver.get(f"https://www.google.com/search?q={keyword}")
+
+5. 정보의 선택자
+driver.find_element(By.CSS_SELECTOR,"    ").text
+driver.find_element(By.ID, 'wob_tm').text
+
+ex)
+books = driver.find_elements(By.CLASS_NAME,'prod_item')
+
+for index, book in enumerate(books):
+    rank = index + 1
+    title = book.find_element(By.CLASS_NAME,'prod_info').text
+    author = book.find_element(By.CLASS_NAME,'prod_author').text
+    price = book.find_element(By.CLASS_NAME,'price').text
+    print(rank, title, author, price)
+
+위의 코드에서 for 문 안 정보 선택자에서 book.find_element인 이유
+>> books를 통해서 책들을 선택한 후,
+>> 그 중에 한개씩 뽑아 그 book에 해당하는 요소들을 뽑기 때문이다. 
+
+6.
+driver.quit() 코드는 selenium이 더 이상 브라우저를 컨트롤 할 수 없게 한다.
+
+7.Crawling 도중 오류
+
+애플 정보는 출력이 되는데 그 다음 삼성전자와 sk하이닉스가 출력이 안되는데 어떻게?
+raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='localhost', port=6456): 
+Max retries exceeded with url: /session/9cad55b78b1dfd21d64196493125eaf8/url 
+(Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001BC3DE0D300>: 
+Failed to establish a new connection: [WinError 10061] 대상 컴 퓨터에서 연결을 거부했으므로 연결하지 못했습니다'))
+
+driver.quit() 위치 확인하고 WebDeiver 세션이 종료되지는 않았는지 확인하기
+
+
